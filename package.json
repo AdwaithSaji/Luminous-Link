@@ -1,0 +1,12 @@
+{
+  "name": "luminous-link",
+  "version": "1.0.0",
+  "description": "Li-Fi smart lock: an Arduino unlocks a solenoid when it reads the right PIN as pulses of light.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "npx --yes serve@14.2.4 web"
+  },
+  "license": "MIT"
+}

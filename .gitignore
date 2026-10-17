@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+build/
+
+# Original course report and paper: they contain registration numbers and
+# certificates, so they stay out of the public repo.
+*.pdf

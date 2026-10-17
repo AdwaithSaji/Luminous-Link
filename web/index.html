@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luminous Link · unlock a door with light</title>
+  <meta name="description" content="A Li-Fi smart lock. Your phone flashes a PIN as pulses of light, an Arduino reads them through a light sensor and opens a solenoid bolt. Try the transmitter in your browser.">
+  <meta name="theme-color" content="#07080d">
+  <meta property="og:title" content="Luminous Link · unlock a door with light">
+  <meta property="og:description" content="A Li-Fi smart lock built on Arduino. Try the light transmitter in your browser.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <header class="nav wrap">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>Luminous Link</a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#hardware">Hardware</a>
+      <a class="nav-gh" href="https://github.com/AdwaithSaji/Luminous-Link">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <p class="pill"><span class="pill-dot"></span>1st place · TECHSCAPE 2024 department exhibition</p>
+      <h1>Unlock a door<br>with <span class="lit">light</span>.</h1>
+      <p class="lede">
+        Luminous Link is a Li-Fi smart lock. Your phone flashes a PIN as pulses of light,
+        an Arduino reads them through a light sensor, and a solenoid bolt slides open.
+        No Wi-Fi or Bluetooth signal that can be picked up through a wall.
+      </p>
+    </section>
+
+    <section class="console wrap" aria-label="Live demo">
+      <div class="panel tx">
+        <div class="panel-head">
+          <span class="eyebrow">Transmitter</span>
+          <span class="hint">your phone</span>
+        </div>
+
+        <label class="field-label" for="pin">PIN</label>
+        <input id="pin" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="2024" autocomplete="off" spellcheck="false">
+
+        <span class="field-label" id="modeLabel">Send via</span>
+        <div class="seg" role="radiogroup" aria-labelledby="modeLabel">
+          <button type="button" role="radio" aria-checked="true" data-mode="virtual">Virtual lock</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="screen">Screen</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="torch">Torch</button>
+        </div>
+        <p class="mode-note" id="modeNote"></p>
+
+        <button type="button" class="send" id="send">
+          <span class="send-label">Transmit</span>
+        </button>
+      </div>
+
+      <div class="panel rx">
+        <div class="panel-head">
+          <span class="eyebrow">Receiver</span>
+          <span class="hint">virtual lock · PIN 2024</span>
+        </div>
+
+        <div class="lock" id="lock" data-state="idle">
+          <div class="halo" aria-hidden="true"></div>
+          <svg class="lock-icon" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="shackle" d="M21 30V21a11 11 0 0 1 22 0v9" />
+            <rect class="body" x="13" y="29" width="38" height="27" rx="7" />
+            <circle class="sensor" id="sensor" cx="32" cy="42.5" r="4.5" />
+          </svg>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite">Waiting for light</p>
+
+        <div class="bits" id="bits" aria-label="Received bits"></div>
+        <div class="bits-legend"><span>PIN · 16 bits</span><span>checksum</span></div>
+      </div>
+
+      <div class="panel wave-panel">
+        <div class="panel-head">
+          <span class="eyebrow">Signal</span>
+          <span class="hint" id="waveHint"></span>
+        </div>
+        <canvas id="wave" height="120" aria-label="Light signal for the current PIN"></canvas>
+        <div class="wave-legend">
+          <span><i class="sw sw-pre"></i>preamble sets the timing</span>
+          <span><i class="sw sw-pin"></i>short = 0 · long = 1</span>
+          <span><i class="sw sw-sum"></i>checksum</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="how wrap" id="how">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-n">01</span>
+          <h3>Encode</h3>
+          <p>The PIN becomes 16 bits plus a 4-bit checksum. Each bit is a flash: short for 0, long for 1.</p>
+        </li>
+        <li>
+          <span class="step-n">02</span>
+          <h3>Flash</h3>
+          <p>A long preamble comes first. The lock measures it to learn the speed, so a fast screen and a slow torch both work.</p>
+        </li>
+        <li>
+          <span class="step-n">03</span>
+          <h3>Unlock</h3>
+          <p>The Arduino times every pulse, checks the checksum and PIN, then drives the solenoid through a MOSFET. Three wrong PINs lock it for 30 seconds.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="hardware wrap" id="hardware">
+      <h2>Hardware</h2>
+      <div class="hw-grid">
+        <dl class="parts">
+          <div><dt>Arduino Uno / Nano</dt><dd>decoder &amp; control</dd></div>
+          <div><dt>LDR module (LM393)</dt><dd>D8 · light sensor</dd></div>
+          <div><dt>IRF730 MOSFET</dt><dd>D12 · switches the 12 V lock</dd></div>
+          <div><dt>12 V solenoid lock</dt><dd>the bolt</dd></div>
+          <div><dt>Green / red LED</dt><dd>D6 / D11 · open, closed</dd></div>
+          <div><dt>Buzzer</dt><dd>D4 · feedback &amp; alarm</dd></div>
+        </dl>
+        <figure class="photo">
+          <img src="prototype.jpg" alt="The Luminous Link prototype: a wooden door frame with a solenoid bolt, Arduino and breadboard wiring" loading="lazy">
+          <figcaption>The prototype that took 1st place at TECHSCAPE 2024, my first engineering project</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot wrap">
+    <p>Built by Adwaith Sajikumar ·Karunya Institute of Technology and Sciences</p>
+    <p><a href="https://github.com/AdwaithSaji/Luminous-Link">Source on GitHub</a> · MIT License</p>
+  </footer>
+
+  <div class="flash" id="flash" hidden>
+    <p class="flash-hint">Hold the screen against the light sensor<br><small>tap to cancel</small></p>
+  </div>
+</body>
+</html>
